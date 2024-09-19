@@ -2,10 +2,6 @@ const nombre = prompt('Bienvenido, me dirias tu nombre por favor')
 
 let empleados = ['Adrian', 'Victor', 'Jose']
 
-function mensaje(mensaje) {
-    alert(mensaje);
-}
-
 function listarEmpleados(listaEmpleados){
     
     for (let i = 0; i < empleados.length; i++) {
@@ -25,7 +21,7 @@ function buscarEmpleado (empleadoABuscar){
 }
 
 function contarEmpleados (){
-    return mensaje('Actualmente contamos con ' + empleados.length );
+    return alert('Actualmente contamos con ' + empleados.length );
 }
 
 function eliminarEmpleado(empleadoAEliminar) {
@@ -34,9 +30,9 @@ function eliminarEmpleado(empleadoAEliminar) {
     if (resultado !== null) {
         const [id, empleado] = resultado; 
         empleados.splice(id - 1, 1);
-        mensaje('Empleado ' + empleado + ' ha sido eliminado exitosamente.');
+        alert('Empleado ' + empleado + ' ha sido eliminado exitosamente.');
     } else {
-        mensaje('Empleado no encontrado.');
+        alert('Empleado no encontrado.');
     }
 }
 
@@ -49,13 +45,13 @@ do {
             console.table(empleados);
             let listaEmpleados = '';
             listaEmpleados = listarEmpleados(listaEmpleados);
-            mensaje(listaEmpleados);
+            alert(listaEmpleados);
             break;
         
         case 2:
             let nuevoEmpleado = prompt('Nombre del nuevo empleado: ');
             let confirmacion = confirm('El nombre ' + nuevoEmpleado + ' es correcto?');
-            buscarEmpleado(nuevoEmpleado) !== null ? mensaje('Empleado ' + nuevoEmpleado + ' ya esta ingresado') : confirmacion ?  (empleados.push(nuevoEmpleado), mensaje('Empleado agregado')) : mensaje('empleado no agregado');
+            buscarEmpleado(nuevoEmpleado) !== null ? alert('Empleado ' + nuevoEmpleado + ' ya esta ingresado') : confirmacion ?  (empleados.push(nuevoEmpleado), alert('Empleado agregado')) : alert('empleado no agregado');
             break;
           
         case 3:
@@ -63,9 +59,9 @@ do {
             const resultadoBusqueda = buscarEmpleado(nombreABuscar);
             if (resultadoBusqueda !== null) {
                 const [id, empleadoEncontrado] = resultadoBusqueda;
-                mensaje('Empleado encontrado, id: ' + id + ' - ' + empleadoEncontrado);
+                alert('Empleado encontrado, id: ' + id + ' - ' + empleadoEncontrado);
             } else {
-                mensaje('Empleado no encontrado');
+                alert('Empleado no encontrado');
             }
             break;
         
@@ -79,11 +75,11 @@ do {
             break;
 
         case 6:
-            mensaje('Gracias ' + nombre + ' por usar nuestro sistema, ¡que tengas un buen día!');
+            alert('Gracias ' + nombre + ' por usar nuestro sistema, ¡que tengas un buen día!');
             break;
         
         default:
-            mensaje('Opción no válida. Por favor, selecciona una opción entre 1 y 3.');
+            alert('Opción no válida. Por favor, selecciona una opción entre 1 y 6.');
             break;
     }
 } while (opciones !== 6);
