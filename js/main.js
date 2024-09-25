@@ -4,17 +4,19 @@ let empleados = ['Adrian', 'Victor', 'Jose']
 
 function listarEmpleados(listaEmpleados){
     
-    for (let i = 0; i < empleados.length; i++) {
-        listaEmpleados += (i + 1) + '. ' + empleados[i] + '\n';
+    let contador = 1;
+    for (let empleado of empleados) {
+        listaEmpleados += contador + '. ' + empleado + '\n';
+        contador++;
     }
     return listaEmpleados;
 }
 
 function buscarEmpleado (empleadoABuscar){
 
-    for (const index in empleados){
-        if (empleados[index].toLowerCase() === empleadoABuscar.toLowerCase()){
-            return [parseInt(index) + 1, empleados[index]]
+    for (const [index, empleado] of empleados.entries()) {
+        if (empleado.toLowerCase() === empleadoABuscar.toLowerCase()) {
+            return [index + 1, empleado];
         }
     }
     return null
