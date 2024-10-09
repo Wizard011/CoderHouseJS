@@ -1,87 +1,162 @@
-const nombre = prompt('Bienvenido, me dirias tu nombre por favor')
+let empleados = [];
 
-let empleados = ['Adrian', 'Victor', 'Jose']
+let sectores = ['Administración', 'Ventas', 'Marketing', 'Sistemas', 'RRHH', 'Legal', 'Compras', 'Producción'];
 
-function listarEmpleados(listaEmpleados){
-    
-    let contador = 1;
-    for (let empleado of empleados) {
-        listaEmpleados += contador + '. ' + empleado + '\n';
-        contador++;
-    }
-    return listaEmpleados;
+// CONTROL DE VISION DE BOTONES
+function viewFuntionEmployee(divId) {
+    // Ocultar todos los contenedores
+    document.getElementById('containerListEmployees').style.display = 'none';
+    document.getElementById('containerSearchEmployees').style.display = 'none';
+    document.getElementById('containerAddEmployees').style.display = 'none';
+    document.getElementById('containerDeleteEmployees').style.display = 'none';
+
+    document.getElementById(divId).style.display = 'block';
 }
 
-function buscarEmpleado (empleadoABuscar){
+document.getElementById('btnListEmployees').addEventListener('click', function() {
+    viewFuntionEmployee('containerListEmployees'); // Mostrar el contenedor de "Listar Empleados"
+    listEmployees(empleados);
+});
 
-    for (const [index, empleado] of empleados.entries()) {
-        if (empleado.toLowerCase() === empleadoABuscar.toLowerCase()) {
-            return [index + 1, empleado];
+document.getElementById('btnSearchEmployees').addEventListener('click', function() {
+    viewFuntionEmployee('containerSearchEmployees'); // Mostrar el contenedor de "Buscar Empleados"
+    document.getElementById('resultSearchEmployee').innerHTML = '';
+    SearchEmployees();
+});
+
+document.getElementById('btnAddEmployees').addEventListener('click', function() {
+    viewFuntionEmployee('containerAddEmployees'); // Mostrar el contenedor de "Agregar Empleados"
+    addEmployees();
+});
+
+document.getElementById('btnDeleteEmployees').addEventListener('click', function() {
+    viewFuntionEmployee('containerDeleteEmployees'); // Mostrar el contenedor de "Eliminar Empleados"
+});
+
+viewFuntionEmployee(null);
+
+// FIN DE CONTROL DE VISION DE BOTON
+
+// LISTAR EMPLEADOS
+function listEmployees(empleados){
+    const tbody = document.getElementById('dataListEmployees');
+    tbody.innerHTML = '';
+    const storedEmpleados = localStorage.getItem('empleados');
+    
+    if (storedEmpleados) {
+        const empleados = JSON.parse(storedEmpleados);
+        empleados.forEach(empleado => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <th scope="row">${empleado.legajo}</th>
+                <td>${empleado.empleado}</td>
+                <td>${empleado.sector}</td>
+                <td>${empleado.hijos}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+}
+
+// BUSCAR EMPLEADO
+function SearchEmployees (inputLegajo) {
+    const btnSearchEmployees = document.getElementById('btnSearchEmployee');
+    const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
+
+    btnSearchEmployees.onclick = () => {
+        
+        const inputLegajo = document.getElementById('inputSearchEmployee').value;
+        const searchEmployee = localStorageEmployees.find(employee => employee.legajo === inputLegajo);
+        const resultSearchEmployee = document.getElementById('resultSearchEmployee');
+        
+        if (searchEmployee) {
+            resultSearchEmployee.innerHTML = `
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Legajo</th>
+                                    <th scope="col">Empleado</th>
+                                    <th scope="col">Sector</th>
+                                    <th scope="col">Cantidad de Hijos/as</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">${searchEmployee.legajo}</th>
+                                        <td>${searchEmployee.empleado}</td>
+                                        <td>${searchEmployee.sector}</td>
+                                        <td>${searchEmployee.hijos}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `
+        } else {
+            resultSearchEmployee.innerHTML = `<h6 class="marginElement mensergerDanger">No se encontró el empleado con legajo ${inputLegajo}</h6>`;
+        }
+
+        document.getElementById('inputSearchEmployee').value = '';
+    }
+
+    
+}
+
+function controlChildren() {
+    let count = document.getElementById('countChildren');
+    let subtract = document.getElementById('subtractChildren');
+    let add = document.getElementById('addChildren');
+    let counter = 0;
+
+    subtract.onclick = () => {
+        if (counter > 0) {
+            counter--;
+            count.innerHTML = counter;
         }
     }
-    return null
-}
-
-function contarEmpleados (){
-    return alert('Actualmente contamos con ' + empleados.length );
-}
-
-function eliminarEmpleado(empleadoAEliminar) {
-    const resultado = buscarEmpleado(empleadoAEliminar);
-
-    if (resultado !== null) {
-        const [id, empleado] = resultado; 
-        empleados.splice(id - 1, 1);
-        alert('Empleado ' + empleado + ' ha sido eliminado exitosamente.');
-    } else {
-        alert('Empleado no encontrado.');
+    add.onclick = () => {
+        counter++;
+        count.innerHTML = counter;
     }
 }
 
-do {
-    opciones = parseInt(prompt('¿Qué deseas hacer ' + nombre + '?: \n\n1- Ver Empleados \n2- Cargar Empleados \n3- Buscar Empleado \n4- Cuantos Empleados Existen \n5- Eliminar Empleado \n6- Salir'));
-
-    switch (opciones) {
-        case 1:
-            console.log('Lista de Empleados:');
-            console.table(empleados);
-            let listaEmpleados = '';
-            listaEmpleados = listarEmpleados(listaEmpleados);
-            alert(listaEmpleados);
-            break;
-        
-        case 2:
-            let nuevoEmpleado = prompt('Nombre del nuevo empleado: ');
-            let confirmacion = confirm('El nombre ' + nuevoEmpleado + ' es correcto?');
-            buscarEmpleado(nuevoEmpleado) !== null ? alert('Empleado ' + nuevoEmpleado + ' ya esta ingresado') : confirmacion ?  (empleados.push(nuevoEmpleado), alert('Empleado agregado')) : alert('empleado no agregado');
-            break;
-          
-        case 3:
-            let nombreABuscar = prompt('Ingrese el nombre del empleado a buscar');
-            const resultadoBusqueda = buscarEmpleado(nombreABuscar);
-            if (resultadoBusqueda !== null) {
-                const [id, empleadoEncontrado] = resultadoBusqueda;
-                alert('Empleado encontrado, id: ' + id + ' - ' + empleadoEncontrado);
-            } else {
-                alert('Empleado no encontrado');
-            }
-            break;
-        
-        case 4: 
-            contarEmpleados();
-            break;
-
-        case 5:
-            let empleadoAEliminar = prompt('Ingrese el nombre del empleado a eliminar');
-            eliminarEmpleado(empleadoAEliminar);
-            break;
-
-        case 6:
-            alert('Gracias ' + nombre + ' por usar nuestro sistema, ¡que tengas un buen día!');
-            break;
-        
-        default:
-            alert('Opción no válida. Por favor, selecciona una opción entre 1 y 6.');
-            break;
+//LISTAR SECTORES
+function listSectors(sectores) {
+    const selectSector = document.getElementById('selectSector');
+    for (const sector of sectores) {
+        const option = document.createElement('option');
+        option.innerHTML = `<option value="${sector}">${sector}</option>`;
+        selectSector.appendChild(option);
     }
-} while (opciones !== 6);
+}
+
+//AGREGAR EMPLEADO
+function addEmployees() {
+
+    listSectors(sectores);
+    controlChildren();
+
+    let buttonAddEmployee = document.getElementById('saveEmployee');
+
+    buttonAddEmployee.onclick = () => {
+        const legajo = document.getElementById('legajo').value;
+        const empleado = document.getElementById('empleado').value;
+        const sector = document.getElementById('selectSector').value;
+        const hijos = document.getElementById('countChildren').textContent;
+        
+        const newEmployee = {
+            id: empleados.length, // Asignar un ID basado en la longitud del array
+            legajo: legajo,
+            empleado: empleado,
+            sector: sector,
+            hijos: hijos
+        };
+    
+        empleados.push(newEmployee);
+
+        localStorage.setItem('empleados', JSON.stringify(empleados));
+
+        document.getElementById('legajo').value = '';
+        document.getElementById('empleado').value = '';
+        document.getElementById('selectSector').value = '';
+        document.getElementById('countChildren').textContent = 0;
+    }
+}
