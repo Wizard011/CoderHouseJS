@@ -27,8 +27,8 @@
                     <div class="marginSeccion" id="containerListEmployees">
                         <h4>Lista de Empleado</h4>
 
-                        <table class="table marginSeccion" id="table">
-                            <thead>
+                        <table class="table table-striped marginSeccion" id="table">
+                            <thead class="table-primary">
                             <tr>
                                 <th scope="col">Legajo</th>
                                 <th scope="col">Empleado</th>
@@ -75,15 +75,22 @@
                             <button id="addChildren" class="btn btn-secondary">+</button>
                         </div>
                 
-                        <button id="saveEmployee" class="btn btn-success marginElement">Guardar Empleado</button>  
+                        <button id="saveEmployee" class="btn btn-success marginElement">Guardar Empleado</button> 
+                        <div id="resultAddEmployee">
+
+                        </div>
                     </div>
 
                     <div class="marginSeccion" id="containerDeleteEmployees">
                         <h4>Eliminar Empleado</h4>
 
                         <Label class="marginSeccion">Legajo a eliminar</Label>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="inputDeleteEmployee">
                         <button class="btn btn-danger marginElement" id="btnDeleteEmployee">Eliminar</button>
+
+                        <div id="resultDeleteEmployee">
+
+                        </div>
 
                     </div>
 

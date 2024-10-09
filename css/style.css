@@ -4,10 +4,17 @@
 .marginElement {
     margin: 1rem 0rem;
 }
+
+.mensergerSuccess {
+    color: #2a721c;
+    background-color: #d7f8da;
+    padding: 1rem;
+    margin: 1rem 0rem;
+    text-align: center;
+}
 .mensergerDanger {
     color: #721c24;
     background-color: #f8d7da;
-    border-color: #f5c6cb;
     padding: 1rem;
     margin: 1rem 0rem;
     text-align: center;

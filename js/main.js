@@ -31,6 +31,7 @@ document.getElementById('btnAddEmployees').addEventListener('click', function() 
 
 document.getElementById('btnDeleteEmployees').addEventListener('click', function() {
     viewFuntionEmployee('containerDeleteEmployees'); // Mostrar el contenedor de "Eliminar Empleados"
+    deleteEmployee();
 });
 
 viewFuntionEmployee(null);
@@ -59,7 +60,7 @@ function listEmployees(empleados){
 }
 
 // BUSCAR EMPLEADO
-function SearchEmployees (inputLegajo) {
+function SearchEmployees () {
     const btnSearchEmployees = document.getElementById('btnSearchEmployee');
     const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
 
@@ -72,7 +73,7 @@ function SearchEmployees (inputLegajo) {
         if (searchEmployee) {
             resultSearchEmployee.innerHTML = `
                             <table class="table">
-                                <thead>
+                                <thead class="table-primary">
                                 <tr>
                                     <th scope="col">Legajo</th>
                                     <th scope="col">Empleado</th>
@@ -96,8 +97,6 @@ function SearchEmployees (inputLegajo) {
 
         document.getElementById('inputSearchEmployee').value = '';
     }
-
-    
 }
 
 function controlChildren() {
@@ -118,13 +117,20 @@ function controlChildren() {
     }
 }
 
-//LISTAR SECTORES
+// LISTAR SECTORES
 function listSectors(sectores) {
     const selectSector = document.getElementById('selectSector');
-    for (const sector of sectores) {
-        const option = document.createElement('option');
-        option.innerHTML = `<option value="${sector}">${sector}</option>`;
-        selectSector.appendChild(option);
+    if (selectSector) {
+        // Limpiar cualquier opción existente
+        selectSector.innerHTML = '';
+
+        // Agregar nuevas opciones
+        for (const sector of sectores) {
+            const option = document.createElement('option');
+            option.value = sector;
+            option.textContent = sector;
+            selectSector.appendChild(option);
+        }
     }
 }
 
@@ -134,7 +140,9 @@ function addEmployees() {
     listSectors(sectores);
     controlChildren();
 
-    let buttonAddEmployee = document.getElementById('saveEmployee');
+    const buttonAddEmployee = document.getElementById('saveEmployee');
+    const resultAddEmployee = document.getElementById('resultAddEmployee');
+    resultAddEmployee.innerHTML = '';
 
     buttonAddEmployee.onclick = () => {
         const legajo = document.getElementById('legajo').value;
@@ -158,5 +166,32 @@ function addEmployees() {
         document.getElementById('empleado').value = '';
         document.getElementById('selectSector').value = '';
         document.getElementById('countChildren').textContent = 0;
+
+        resultAddEmployee.innerHTML = `<h6 class="marginElement mensergerSuccess">Empleado con legajo ${legajo} agregado correctamente</h6>`;
+    }
+}
+
+// ELIMINAR EMPLEADO
+
+function deleteEmployee() {
+    const btnDeleteEmployee = document.getElementById('btnDeleteEmployee');
+    const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
+    const resultDeleteEmployee = document.getElementById('resultDeleteEmployee');
+    resultDeleteEmployee.innerHTML = '';
+
+    btnDeleteEmployee.onclick = () => {
+        const inputLegajo = document.getElementById('inputDeleteEmployee').value;
+        const searchEmployee = localStorageEmployees.find(employee => employee.legajo === inputLegajo);
+
+        if (searchEmployee) {
+            const index = localStorageEmployees.indexOf(searchEmployee);
+            localStorageEmployees.splice(index, 1);
+            localStorage.setItem('empleados', JSON.stringify(localStorageEmployees));
+            resultDeleteEmployee.innerHTML = `<h6 class="marginElement mensergerSuccess">Empleado con legajo ${inputLegajo} eliminado correctamente</h6>`;
+        } else {
+            resultDeleteEmployee.innerHTML = `<h6 class="marginElement mensergerDanger">No se encontró el empleado con legajo ${inputLegajo}</h6>`;
+        }
+
+        document.getElementById('inputDeleteEmployee').value = '';
     }
 }
