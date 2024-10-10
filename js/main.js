@@ -149,25 +149,43 @@ function addEmployees() {
         const empleado = document.getElementById('empleado').value;
         const sector = document.getElementById('selectSector').value;
         const hijos = document.getElementById('countChildren').textContent;
+
+        const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
+
+        //VALIDA PRIMERO SI EL LOCALSTORAGE ESTA VACIO PARA PERMITIR EL PRIMER REGISTRO Y PARA LUEGO VALIDAR SI YA EXISTE EL LEGAJO
+        if (localStorageEmployees !== null) {
+            const searchEmployee = localStorageEmployees.find(employee => employee.legajo === legajo);
+
+            if (searchEmployee) {
+                resultAddEmployee.innerHTML = `<h6 class="marginElement mensergerDanger">Ya existe un empleado con legajo ${legajo}</h6>`;
+                return;
+            } else {
+                const newEmployee = {
+                    id: empleados.length, // Asignar un ID basado en la longitud del array
+                    legajo: legajo,
+                    empleado: empleado,
+                    sector: sector,
+                    hijos: hijos
+                };
+            
+                empleados.push(newEmployee);
         
-        const newEmployee = {
-            id: empleados.length, // Asignar un ID basado en la longitud del array
-            legajo: legajo,
-            empleado: empleado,
-            sector: sector,
-            hijos: hijos
-        };
-    
-        empleados.push(newEmployee);
+                localStorage.setItem('empleados', JSON.stringify(empleados));
+        
+                document.getElementById('legajo').value = '';
+                document.getElementById('empleado').value = '';
+                document.getElementById('selectSector').value = '';
+                document.getElementById('countChildren').textContent = 0;
+        
+                resultAddEmployee.innerHTML = `<h6 class="marginElement mensergerSuccess">Empleado con legajo ${legajo} agregado correctamente</h6>`;
+            }
+        }
+        
+     
+        
+        
 
-        localStorage.setItem('empleados', JSON.stringify(empleados));
-
-        document.getElementById('legajo').value = '';
-        document.getElementById('empleado').value = '';
-        document.getElementById('selectSector').value = '';
-        document.getElementById('countChildren').textContent = 0;
-
-        resultAddEmployee.innerHTML = `<h6 class="marginElement mensergerSuccess">Empleado con legajo ${legajo} agregado correctamente</h6>`;
+        
     }
 }
 
