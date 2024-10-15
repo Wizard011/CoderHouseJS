@@ -59,10 +59,8 @@ viewFuntionEmployee();
 function listEmployees() {
     const tbody = document.getElementById('dataListEmployees');
     tbody.innerHTML = '';
-    const storedEmpleados = localStorage.getItem('empleados');
     
-    if (storedEmpleados) {
-        const empleados = JSON.parse(storedEmpleados);
+    if (empleados) {
         empleados.forEach(empleado => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -79,8 +77,7 @@ function listEmployees() {
 // BUSCAR EMPLEADO
 function SearchEmployees() {
     const inputLegajo = document.getElementById('inputSearchEmployee').value;
-    const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
-    const searchEmployee = localStorageEmployees.find(employee => employee.legajo === inputLegajo);
+    const searchEmployee = empleados.find(employee => employee.legajo === inputLegajo);
     const resultSearchEmployee = document.getElementById('resultSearchEmployee');
     
     if (searchEmployee) {
@@ -154,25 +151,23 @@ function addEmployees() {
     const hijos = document.getElementById('countChildren').textContent;
     const resultAddEmployee = document.getElementById('resultAddEmployee');
 
-    const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
-
     // Validar si ya existe el legajo
-    const searchEmployee = localStorageEmployees.find(employee => employee.legajo === legajo);
+    const searchEmployee = empleados.find(employee => employee.legajo === legajo);
 
     if (searchEmployee) {
         resultAddEmployee.innerHTML = `<h6 class="marginElement mensergerDanger">Ya existe un empleado con legajo ${legajo}</h6>`;
         return;
     } else {
         const newEmployee = {
-            id: localStorageEmployees.length, // Asignar un ID basado en la longitud del array
+            id: empleados.length, // Asignar un ID basado en la longitud del array
             legajo: legajo,
             empleado: empleado,
             sector: sector,
             hijos: hijos
         };
     
-        localStorageEmployees.push(newEmployee);
-        localStorage.setItem('empleados', JSON.stringify(localStorageEmployees));
+        empleados.push(newEmployee);
+        localStorage.setItem('empleados', JSON.stringify(empleados));
     
         document.getElementById('legajo').value = '';
         document.getElementById('empleado').value = '';
@@ -186,15 +181,14 @@ function addEmployees() {
 // ELIMINAR EMPLEADO
 function deleteEmployee() {
     const inputLegajo = document.getElementById('inputDeleteEmployee').value;
-    const localStorageEmployees = JSON.parse(localStorage.getItem('empleados'));
     const resultDeleteEmployee = document.getElementById('resultDeleteEmployee');
 
-    const searchEmployee = localStorageEmployees.find(employee => employee.legajo === inputLegajo);
+    const searchEmployee = empleados.find(employee => employee.legajo === inputLegajo);
 
     if (searchEmployee) {
-        const index = localStorageEmployees.indexOf(searchEmployee);
-        localStorageEmployees.splice(index, 1);
-        localStorage.setItem('empleados', JSON.stringify(localStorageEmployees));
+        const index = empleados.indexOf(searchEmployee);
+        empleados.splice(index, 1);
+        localStorage.setItem('empleados', JSON.stringify(empleados));
         resultDeleteEmployee.innerHTML = `<h6 class="marginElement mensergerSuccess">Empleado con legajo ${inputLegajo} eliminado correctamente</h6>`;
     } else {
         resultDeleteEmployee.innerHTML = `<h6 class="marginElement mensergerDanger">No se encontró el empleado con legajo ${inputLegajo}</h6>`;
