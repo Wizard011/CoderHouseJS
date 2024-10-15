@@ -1,6 +1,11 @@
+#containerListEmployees, #containerSearchEmployees, #containerAddEmployees, #containerDeleteEmployees {
+    display: none;
+}
+
 .marginSeccion {
     margin: 2rem 0rem;
 }
+
 .marginElement {
     margin: 1rem 0rem;
 }
@@ -12,6 +17,7 @@
     margin: 1rem 0rem;
     text-align: center;
 }
+
 .mensergerDanger {
     color: #721c24;
     background-color: #f8d7da;
