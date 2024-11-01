@@ -1,6 +1,16 @@
 let entrenadores = JSON.parse(localStorage.getItem('entrenadores')) || [];
 
-let sectores = ['Administración', 'Ventas', 'Marketing', 'Sistemas', 'RRHH', 'Legal', 'Compras', 'Producción'];
+const pokemonList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151')
+    .then(response => response.json())
+    .then(data => data.results.map(pokemon => pokemon.name))
+    .then(names => new Promise((resolve) => {
+        resolve(names);
+    }));
+
+    console.log(pokemonList);
+    
+
+// let pokemonList = ['Administración', 'Ventas', 'Marketing', 'Sistemas', 'RRHH', 'Legal', 'Compras', 'Producción'];
 
 // CONTROL DE VISIÓN DE BOTONES
 function viewFuntionCoach(divId) {
@@ -33,7 +43,7 @@ document.getElementById('btnSearchCoachs').addEventListener('click', function() 
 
 document.getElementById('btnAddCoachs').addEventListener('click', function() {
     viewFuntionCoach('containerAddCoachs');
-    listSectors(sectores);
+    listSectors(pokemonList);
     controlChildren();
 });
 
@@ -126,15 +136,15 @@ function controlChildren() {
     }
 }
 
-// LISTAR SECTORES
-function listSectors(sectores) {
+// LISTAR pokemonList
+function listSectors(pokemonList) {
     const selectSector = document.getElementById('selectSector');
     if (selectSector) {
         // Limpiar cualquier opción existente
         selectSector.innerHTML = '';
 
         // Agregar nuevas opciones
-        for (const sector of sectores) {
+        for (const sector of pokemonList) {
             const option = document.createElement('option');
             option.value = sector;
             option.textContent = sector;

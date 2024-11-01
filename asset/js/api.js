@@ -52,13 +52,14 @@ function listPokemons() {
             const col = document.createElement('div');
             col.classList.add('col-md-2');
             
-            selectOnePokemon(pokemon.url).then(select => {
+            selectOnePokemon(pokemon.url).then(select => {                
                 col.innerHTML = `
-                    <div class="card">
+                    <div class="card ${select.types[0].type.name}">
                         <img src="${select.sprites.other["official-artwork"].front_default}" class="card-img-top" alt="${pokemon.name}">
                         <div class="card-body text-center">
-                            <h5 class="card-title">${pokemon.name}</h5>
-                            <p>${select.id}</p>
+                            <h5 class="card-title">${select.id} - ${pokemon.name}</h5>
+                            <h6>Peso: ${select.weight / 10} Kg</h6>
+                            <h6>Altura: ${select.height / 10} Kg</h6>
                         </div>
                     </div>
                 `;
@@ -83,18 +84,19 @@ function SearchPokemons() {
         selectOnePokemon(`https://pokeapi.co/api/v2/pokemon/${inputSearch}`).then(select => {
             if (select) {
                 col.innerHTML = `
-                    <div class="card">
+                    <div class="card ${select.types[0].type.name}">
                         <img src="${select.sprites.other["official-artwork"].front_default}" class="card-img-top" alt="${select.name}">
                         <div class="card-body text-center">
-                            <h5 class="card-title">${select.name}</h5>
-                            <p>ID: ${select.id}</p>
+                            <h5 class="card-title">${select.id} - ${select.name}</h5>
+                            <h6>Peso: ${select.weight / 10} Kg</h6>
+                            <h6>Altura: ${select.height / 10} Kg</h6>
                         </div>
                     </div>
                 `;
                 container.appendChild(col);
             }
         }).catch(error => {
-            container.innerHTML = `<p class="text-danger">Error al buscar el Pokémon: ${error.message}</p>`;
+            container.innerHTML = `<p class="marginElement mensergerDanger">Error al buscar el Pokémon: ${error.message}</p>`;
         });
     
         document.getElementById('inputSearchPokemon').value = '';    

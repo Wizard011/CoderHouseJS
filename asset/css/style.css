@@ -36,3 +36,69 @@
 i {
     margin-right: 0.7rem;
 }
+
+.card {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem  !important;
+}
+
+.card-img-top {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10rem;
+}
+.grass {
+    background-color: #e9ffdf !important;
+    border: 0.1rem solid #daefcc !important;
+}
+.fire {
+    background-color: #ffbf9b !important;
+    border: 0.1rem solid #efcdcc !important;
+}
+.water {
+    background-color: #b6e4ff !important;
+    border: 0.1rem solid #c3e6ff !important;
+}
+.bug{
+    background-color: #a6fca6 !important;
+    border: 0.1rem solid #adff99 !important;
+}
+.poison {
+    background-color: #d7aff8 !important;
+    border: 0.1rem solid #e0b9ff !important;
+}
+.electric{
+    background-color: #f4e7b1 !important;
+    border: 0.1rem solid #f9e08a !important;
+}
+.ground {
+    background-color: #ffd19d !important;
+    border: 0.1rem solid #f9e08a !important;
+}
+.fighting {
+    background-color: #f8d7da !important;
+    border: 0.1rem solid #ffc6a5 !important;
+}
+.psychic {
+    background-color: #f7d7f8 !important;
+    border: 0.1rem solid #fdbae7 !important;
+}
+.rock {
+    background-color: #b97c01 !important;
+    border: 0.1rem solid #7c5f00 !important;
+}
+.ghost {
+    background-color: #8c7ae6 !important;
+    border: 0.1rem solid #635294 !important;
+}
+.ice{
+    background-color: #b9f6ff !important;
+    border: 0.1rem solid #c3f2ff !important;
+}
+.dragon {
+    background-color: #97b3e6 !important;
+    border: 0.1rem solid #8a9ff9 !important;
+}
+.normal {
+    background-color: #f8f8f8 !important;
+    border: 0.1rem solid #e6e6e6 !important;
+}
