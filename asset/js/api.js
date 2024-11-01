@@ -1,9 +1,6 @@
 const pokemonsList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151')
     .then(response => response.json())
-    .then(data => new Promise((resolve, reject) => {
-        resolve(data.results);
-        return data.results;
-    }));
+    .then(data => data.results)
 
 function selectOnePokemon(url) {
     return fetch(url)

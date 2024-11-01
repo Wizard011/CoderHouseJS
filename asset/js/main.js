@@ -1,16 +1,20 @@
-let entrenadores = JSON.parse(localStorage.getItem('entrenadores')) || [];
+const pokemonsName = [];
 
-const pokemonList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151')
+const pokemonsList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151')
     .then(response => response.json())
-    .then(data => data.results.map(pokemon => pokemon.name))
-    .then(names => new Promise((resolve) => {
-        resolve(names);
-    }));
+    .then(data => {
+        data.results.forEach(name => {
+            pokemonsName.push(name.name);
+        })
+    });
 
-    console.log(pokemonList);
-    
+function selectOnePokemon(idPokemon) {
+    return fetch(`https://pokeapi.co/api/v2/pokemon/${idPokemon}`)
+        .then(response => response.json())
+        .then(data => data);
+}
 
-// let pokemonList = ['Administración', 'Ventas', 'Marketing', 'Sistemas', 'RRHH', 'Legal', 'Compras', 'Producción'];
+let entrenadores = JSON.parse(localStorage.getItem('entrenadores')) || [];
 
 // CONTROL DE VISIÓN DE BOTONES
 function viewFuntionCoach(divId) {
@@ -43,7 +47,7 @@ document.getElementById('btnSearchCoachs').addEventListener('click', function() 
 
 document.getElementById('btnAddCoachs').addEventListener('click', function() {
     viewFuntionCoach('containerAddCoachs');
-    listSectors(pokemonList);
+    listPokemons(pokemonsName);
     controlChildren();
 });
 
@@ -76,10 +80,27 @@ function listCoachs() {
             row.innerHTML = `
                 <th scope="row">${entrenador.id}</th>
                 <td>${entrenador.entrenador}</td>
-                <td>${entrenador.sector}</th>
+                <td>${entrenador.pokemon}</th>
                 <td>${entrenador.hijos}</td>
+                <td><button class="btn btn-success" id="entrenador${entrenador.id}">Generar Batalla</button></td>
             `;
             tbody.appendChild(row);
+
+            const randomIndex = Math.floor(Math.random() * 150) + 1;
+            const randomPokemon = selectOnePokemon(randomIndex).then(response => response.data);
+            console.log(randomPokemon);
+            
+            document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', () => {
+                Swal.fire({
+                    title: `¡Batalla Generada contra ${pokemonsName[randomIndex]}!`,
+                    imageUrl: "https://unsplash.it/400/200",
+                    imageWidth: 200,
+                    imageHeight: 200,
+                    text: `La batalla para el entrenador ${entrenador.nombre} ha sido generada.`,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
         });
     }
 }
@@ -97,7 +118,7 @@ function SearchCoachs() {
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Entrenador</th>
-                    <th scope="col">Sector</th>
+                    <th scope="col">Pokemon</th>
                     <th scope="col">Cantidad de Hijos/as</th>
                 </tr>
                 </thead>
@@ -105,7 +126,7 @@ function SearchCoachs() {
                     <tr>
                         <th scope="row">${searchCoach.id}</th>
                         <td>${searchCoach.entrenador}</td>
-                        <td>${searchCoach.sector}</td>
+                        <td>${searchCoach.pokemon}</td>
                         <td>${searchCoach.hijos}</td>
                     </tr>
                 </tbody>
@@ -136,19 +157,19 @@ function controlChildren() {
     }
 }
 
-// LISTAR pokemonList
-function listSectors(pokemonList) {
-    const selectSector = document.getElementById('selectSector');
-    if (selectSector) {
+// LISTAR pokemonsName
+function listPokemons(pokemonsName) {
+    const selectPokemon = document.getElementById('selectPokemon');
+    if (selectPokemon) {
         // Limpiar cualquier opción existente
-        selectSector.innerHTML = '';
+        selectPokemon.innerHTML = '';
 
         // Agregar nuevas opciones
-        for (const sector of pokemonList) {
+        for (const pokemon of pokemonsName) {
             const option = document.createElement('option');
-            option.value = sector;
-            option.textContent = sector;
-            selectSector.appendChild(option);
+            option.value = pokemon;
+            option.textContent = pokemon;
+            selectPokemon.appendChild(option);
         }
     }
 }
@@ -157,7 +178,7 @@ function listSectors(pokemonList) {
 function addCoachs() {
     const id = document.getElementById('id').value;
     const entrenador = document.getElementById('entrenador').value;
-    const sector = document.getElementById('selectSector').value;
+    const pokemon = document.getElementById('selectPokemon').value;
     const hijos = document.getElementById('countChildren').textContent;
     const resultAddCoach = document.getElementById('resultAddCoach');
 
@@ -172,7 +193,7 @@ function addCoachs() {
             id: entrenadores.length, // Asignar un ID basado en la longitud del array
             id: id,
             entrenador: entrenador,
-            sector: sector,
+            pokemon: pokemon,
             hijos: hijos
         };
     
@@ -181,7 +202,7 @@ function addCoachs() {
     
         document.getElementById('id').value = '';
         document.getElementById('entrenador').value = '';
-        document.getElementById('selectSector').value = '';
+        document.getElementById('selectPokemon').value = '';
         document.getElementById('countChildren').textContent = 0;
     
         resultAddCoach.innerHTML = `<h6 class="marginElement mensergerSuccess">Entrenador con id ${id} agregado correctamente</h6>`;
@@ -205,4 +226,8 @@ function deleteCoach() {
     }
 
     document.getElementById('inputDeleteCoach').value = '';
+}
+
+function battlePokemon (){
+    
 }
