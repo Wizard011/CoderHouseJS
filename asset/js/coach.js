@@ -8,10 +8,26 @@ const pokemonsList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151
         })
     });
 
-function selectOnePokemon(idPokemon) {
-    return fetch(`https://pokeapi.co/api/v2/pokemon/${idPokemon}`)
-        .then(response => response.json())
-        .then(data => data);
+async function selectOnePokemon(idPokemon) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${idPokemon}`);
+        const data = await response.json();
+        return data;
+
+    } catch (err) {
+        console.error('Error al obtener un Pokemon:', err);
+    }
+}
+
+async function selectOneMove(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+
+    } catch (err) {
+        console.error('Error al obtener ataque de Pokemon:', err);
+    }
 }
 
 let entrenadores = JSON.parse(localStorage.getItem('entrenadores')) || [];
@@ -88,38 +104,55 @@ function listCoachs() {
             document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', () => {
 
                 selectOnePokemon(entrenador.pokemon).then(pokemonCoach => {
-                    const randomIndex = Math.floor(Math.random() * 150) + 1;
+
+                    let attackRandom = Math.floor(Math.random() * pokemonCoach.moves.length); // NUMERO RANDOM DE ATAQUE SEGUN LARGO
+                    let attackUrlPokemon = pokemonCoach.moves[attackRandom].move.url; //URL PARA CONSULTAR PODER
+                    let attackNamePokemon = pokemonCoach.moves[attackRandom].move.name; //NOMBRE DEl ATAQUE
                     
-                    selectOnePokemon(randomIndex).then(pokemonRival => {
-                        let powerPokemon = Math.floor(Math.random() * 100);
-                        let powerRival = Math.floor(Math.random() * 100);
-    
-                        if (powerPokemon > powerRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
-    
-                        document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
-                        document.getElementById('modalBody').innerHTML = `
-                            <div class="row">
-                                <div class="col-5 containerVs">
-                                    <img class="imgPokemonVs" src=${pokemonCoach.sprites.other["official-artwork"].front_default}>
-                                    <p>${pokemonCoach.name} usó <strong>${pokemonCoach.moves[Math.floor(Math.random()*pokemonRival.moves.length)].move.name}</strong> con poder ${powerPokemon}</p>
-                                </div>
-                            <div class="col-2">
-                                <img src="../img/vs.png" class="imgVs">
-                            </div>
-                                <div class="col-5 containerVs">
-                                    <img class="imgPokemonVs" src=${pokemonRival.sprites.other["official-artwork"].front_default}>
-                                    <p>${pokemonRival.name} usó <strong>${pokemonRival.moves[Math.floor(Math.random()*pokemonRival.moves.length)].move.name}</strong> con poder ${powerRival}</p>
-                                </div>
-                            </div>
-                        `;
-                        setTimeout(() => {
-                            Swal.fire({
-                                title: `${powerPokemon > powerRival ? 'Sumaste 1 punto en este duelo' : 'Restaste 1 punto en este duelo'}`,
-                                icon: `${powerPokemon > powerRival ?  'success' : 'error'}`,
-                                confirmButtonText: `${powerPokemon > powerRival ? 'Ganaste' : 'Perdiste'}`
+                    selectOneMove(attackUrlPokemon).then(movePokemon => {
+                        
+                        let powerAttackPokemon = movePokemon.power;
+                    
+                        const randomIndex = Math.floor(Math.random() * 150) + 1;
+                        
+                        selectOnePokemon(randomIndex).then(pokemonRival => {
+
+                            let attackRandomRival = Math.floor(Math.random() * pokemonRival.moves.length);
+                            let attackUrlRival = pokemonRival.moves[attackRandomRival].move.url;
+                            let attackNameRival = pokemonRival.moves[attackRandomRival].move.name;
+
+                            selectOneMove(attackUrlRival).then(moveRival => {
+
+                                let powerAttackRival = moveRival.power;
+                                
+                                if (powerAttackPokemon > powerAttackRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
+                                
+                                document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
+                                document.getElementById('modalBody').innerHTML = `
+                                    <div class="row">
+                                        <div class="col-5 containerVs">
+                                            <img class="imgPokemonVs" src=${pokemonCoach.sprites.other["official-artwork"].front_default}>
+                                            <p>${pokemonCoach.name} usó <strong>${attackNamePokemon}</strong> con poder ${powerAttackPokemon == null ? 0 : powerAttackPokemon}</p>
+                                        </div>
+                                        <div class="col-2">
+                                            <img src="../img/vs.png" class="imgVs">
+                                        </div>
+                                        <div class="col-5 containerVs">
+                                            <img class="imgPokemonVs" src=${pokemonRival.sprites.other["official-artwork"].front_default}>
+                                            <p>${pokemonRival.name} usó <strong>${attackNameRival}</strong> con poder ${powerAttackRival == null ? 0 : powerAttackRival}</p>
+                                        </div>
+                                    </div>
+                                    `;
+                                setTimeout(() => {
+                                    Swal.fire({
+                                        title: `${powerAttackPokemon > powerAttackRival ? 'Sumaste 1 punto en este duelo' : 'Restaste 1 punto en este duelo'}`,
+                                        icon: `${powerAttackPokemon > powerAttackRival ?  'success' : 'error'}`,
+                                        confirmButtonText: `${powerAttackPokemon > powerAttackRival ? 'Ganaste' : 'Perdiste'}`
+                                    });
+                                }, 1500);
+                                listCoachs();
                             });
-                        }, 1500);
-                        listCoachs();
+                        });
                     });
                 });
             });

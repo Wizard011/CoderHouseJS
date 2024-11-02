@@ -2,12 +2,16 @@ const pokemonsList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151
     .then(response => response.json())
     .then(data => data.results)
 
-function selectOnePokemon(url) {
-    return fetch(url)
-        .then(response => response.json())
-        .then(data => data);
-}
+async function selectOnePokemon(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
 
+    } catch (err) {
+        console.error('Error al obtener un Pokemon:', err);
+    }
+}
 // CONTROL DE VISIÓN DE BOTONES
 function viewFuntionPokemon(divId) {
     // Ocultar todos los contenedores
