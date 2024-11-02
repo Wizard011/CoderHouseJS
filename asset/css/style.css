@@ -37,6 +37,14 @@ i {
     margin-right: 0.7rem;
 }
 
+.imgVs {
+    width: 8rem;
+    border-radius: 10rem;
+}
+.imgSwal{
+    width: 15rem;
+}
+
 .card {
     margin-bottom: 1rem;
     padding-bottom: 0.5rem  !important;

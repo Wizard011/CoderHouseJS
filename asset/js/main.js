@@ -3,8 +3,8 @@ const pokemonsName = [];
 const pokemonsList = fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=151')
     .then(response => response.json())
     .then(data => {
-        data.results.forEach(name => {
-            pokemonsName.push(name.name);
+        data.results.forEach(pokemon => {
+            pokemonsName.push(pokemon.name);
         })
     });
 
@@ -86,23 +86,52 @@ function listCoachs() {
             `;
             tbody.appendChild(row);
 
-            const randomIndex = Math.floor(Math.random() * 150) + 1;
-            const randomPokemon = selectOnePokemon(randomIndex).then(response => response.data);
-            console.log(randomPokemon);
-            
             document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', () => {
-                Swal.fire({
-                    title: `¡Batalla Generada contra ${pokemonsName[randomIndex]}!`,
-                    imageUrl: "https://unsplash.it/400/200",
-                    imageWidth: 200,
-                    imageHeight: 200,
-                    text: `La batalla para el entrenador ${entrenador.nombre} ha sido generada.`,
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
+                const randomIndex = Math.floor(Math.random() * 150) + 1;
+                
+                selectOnePokemon(randomIndex).then(data => {
+                    let powerRival = Math.floor(Math.random() * 100);
+                    let powerPokemon = Math.floor(Math.random() * 100);
+                    if (powerPokemon > powerRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
+                    
+                    Swal.fire({
+                        title: `¡Batalla generada contra ${data.name}!`,
+                        html: ``,
+                        imageWidth: 200,
+                        imageHeight: 200,
+                        html: `
+                        <div class="row">
+                            <div class="col-5">
+                                <img class="imgSwal" src=${data.sprites.other["official-artwork"].front_default}>
+                                <p>${data.name} usó <strong>${data.moves[Math.floor(Math.random()*data.moves.length)].move.name}</strong> con poder ${powerRival}</p>
+                            </div>
+                            <div class="col-2">
+                                <img src="../img/vs.png" class="imgVs">
+                            </div>
+                            <div class="col-5">
+                                <p>${entrenador.pokemon} usó <strong>un ataque especial</strong> con poder ${powerPokemon}</p>
+                            </div>
+                        </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonText: `${powerPokemon>powerRival ? 'Ganaste' : 'Perdiste'}`
+                    });
+                    listCoachs();
                 });
             });
         });
     }
+}
+
+function winBattle(entrenadorName) {
+    const entrenador = entrenadores.find(entrenador => entrenador.entrenador === entrenadorName);
+    entrenador.hijos++;
+    localStorage.setItem('entrenadores', JSON.stringify(entrenadores));
+}
+function loseBattle(entrenadorName) {
+    const entrenador = entrenadores.find(entrenador => entrenador.entrenador === entrenadorName);
+    entrenador.hijos--;
+    localStorage.setItem('entrenadores', JSON.stringify(entrenadores));
 }
 
 // BUSCAR ENTRENADOR
@@ -139,24 +168,6 @@ function SearchCoachs() {
     document.getElementById('inputSearchCoach').value = '';
 }
 
-function controlChildren() {
-    let count = document.getElementById('countChildren');
-    let subtract = document.getElementById('subtractChildren');
-    let add = document.getElementById('addChildren');
-    let counter = 0;
-
-    subtract.onclick = () => {
-        if (counter > 0) {
-            counter--;
-            count.innerHTML = counter;
-        }
-    }
-    add.onclick = () => {
-        counter++;
-        count.innerHTML = counter;
-    }
-}
-
 // LISTAR pokemonsName
 function listPokemons(pokemonsName) {
     const selectPokemon = document.getElementById('selectPokemon');
@@ -179,7 +190,6 @@ function addCoachs() {
     const id = document.getElementById('id').value;
     const entrenador = document.getElementById('entrenador').value;
     const pokemon = document.getElementById('selectPokemon').value;
-    const hijos = document.getElementById('countChildren').textContent;
     const resultAddCoach = document.getElementById('resultAddCoach');
 
     // Validar si ya existe el id
@@ -194,7 +204,7 @@ function addCoachs() {
             id: id,
             entrenador: entrenador,
             pokemon: pokemon,
-            hijos: hijos
+            hijos: 0
         };
     
         entrenadores.push(newCoach);
@@ -203,7 +213,6 @@ function addCoachs() {
         document.getElementById('id').value = '';
         document.getElementById('entrenador').value = '';
         document.getElementById('selectPokemon').value = '';
-        document.getElementById('countChildren').textContent = 0;
     
         resultAddCoach.innerHTML = `<h6 class="marginElement mensergerSuccess">Entrenador con id ${id} agregado correctamente</h6>`;
     }
@@ -228,6 +237,3 @@ function deleteCoach() {
     document.getElementById('inputDeleteCoach').value = '';
 }
 
-function battlePokemon (){
-    
-}
