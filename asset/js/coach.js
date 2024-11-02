@@ -48,7 +48,6 @@ document.getElementById('btnSearchCoachs').addEventListener('click', function() 
 document.getElementById('btnAddCoachs').addEventListener('click', function() {
     viewFuntionCoach('containerAddCoachs');
     listPokemons(pokemonsName);
-    controlChildren();
 });
 
 document.getElementById('btnDeleteCoachs').addEventListener('click', function() {
@@ -82,41 +81,46 @@ function listCoachs() {
                 <td>${entrenador.entrenador}</td>
                 <td>${entrenador.pokemon}</th>
                 <td>${entrenador.hijos}</td>
-                <td><button class="btn btn-success" id="entrenador${entrenador.id}">Generar Batalla</button></td>
+                <td><button type="button" class="btn btn-success" id="entrenador${entrenador.id}" data-bs-toggle="modal" data-bs-target="#exampleModal">Generar Batalla</button></td>
             `;
             tbody.appendChild(row);
-
+            
             document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', () => {
-                const randomIndex = Math.floor(Math.random() * 150) + 1;
-                
-                selectOnePokemon(randomIndex).then(data => {
-                    let powerRival = Math.floor(Math.random() * 100);
-                    let powerPokemon = Math.floor(Math.random() * 100);
-                    if (powerPokemon > powerRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
+
+                selectOnePokemon(entrenador.pokemon).then(pokemonCoach => {
+                    const randomIndex = Math.floor(Math.random() * 150) + 1;
                     
-                    Swal.fire({
-                        title: `¡Batalla generada contra ${data.name}!`,
-                        html: ``,
-                        imageWidth: 200,
-                        imageHeight: 200,
-                        html: `
-                        <div class="row">
-                            <div class="col-5">
-                                <img class="imgSwal" src=${data.sprites.other["official-artwork"].front_default}>
-                                <p>${data.name} usó <strong>${data.moves[Math.floor(Math.random()*data.moves.length)].move.name}</strong> con poder ${powerRival}</p>
-                            </div>
+                    selectOnePokemon(randomIndex).then(pokemonRival => {
+                        let powerPokemon = Math.floor(Math.random() * 100);
+                        let powerRival = Math.floor(Math.random() * 100);
+    
+                        if (powerPokemon > powerRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
+    
+                        document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
+                        document.getElementById('modalBody').innerHTML = `
+                            <div class="row">
+                                <div class="col-5 containerVs">
+                                    <img class="imgPokemonVs" src=${pokemonCoach.sprites.other["official-artwork"].front_default}>
+                                    <p>${pokemonCoach.name} usó <strong>${pokemonCoach.moves[Math.floor(Math.random()*pokemonRival.moves.length)].move.name}</strong> con poder ${powerPokemon}</p>
+                                </div>
                             <div class="col-2">
                                 <img src="../img/vs.png" class="imgVs">
                             </div>
-                            <div class="col-5">
-                                <p>${entrenador.pokemon} usó <strong>un ataque especial</strong> con poder ${powerPokemon}</p>
+                                <div class="col-5 containerVs">
+                                    <img class="imgPokemonVs" src=${pokemonRival.sprites.other["official-artwork"].front_default}>
+                                    <p>${pokemonRival.name} usó <strong>${pokemonRival.moves[Math.floor(Math.random()*pokemonRival.moves.length)].move.name}</strong> con poder ${powerRival}</p>
+                                </div>
                             </div>
-                        </div>
-                        `,
-                        icon: 'success',
-                        confirmButtonText: `${powerPokemon>powerRival ? 'Ganaste' : 'Perdiste'}`
+                        `;
+                        setTimeout(() => {
+                            Swal.fire({
+                                title: `${powerPokemon > powerRival ? 'Sumaste 1 punto en este duelo' : 'Restaste 1 punto en este duelo'}`,
+                                icon: `${powerPokemon > powerRival ?  'success' : 'error'}`,
+                                confirmButtonText: `${powerPokemon > powerRival ? 'Ganaste' : 'Perdiste'}`
+                            });
+                        }, 1500);
+                        listCoachs();
                     });
-                    listCoachs();
                 });
             });
         });
@@ -148,7 +152,7 @@ function SearchCoachs() {
                     <th scope="col">Id</th>
                     <th scope="col">Entrenador</th>
                     <th scope="col">Pokemon</th>
-                    <th scope="col">Cantidad de Hijos/as</th>
+                    <th scope="col">Duelos ganados</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -192,11 +196,16 @@ function addCoachs() {
     const pokemon = document.getElementById('selectPokemon').value;
     const resultAddCoach = document.getElementById('resultAddCoach');
 
-    // Validar si ya existe el id
+    // Validar si ya existe el id o el nombre
+    
     const searchCoach = entrenadores.find(Coach => Coach.id === id);
+    const searchCoachName = entrenadores.find(Coach => Coach.entrenador === entrenador);
 
     if (searchCoach) {
         resultAddCoach.innerHTML = `<h6 class="marginElement mensergerDanger">Ya existe un entrenador con id ${id}</h6>`;
+        return;
+    } if (searchCoachName) {
+        resultAddCoach.innerHTML = `<h6 class="marginElement mensergerDanger">Ya existe un entrenador con el nombre ${entrenador}</h6>`;
         return;
     } else {
         const newCoach = {

@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- JS -->
-        <script defer src="../js/main.js"></script>
+        <script defer src="../js/coach.js"></script>
         
         <!-- CSS -->
         <link rel="stylesheet" href="../css/style.css">
@@ -47,7 +47,7 @@
                                 <th scope="col">Id</th>
                                 <th scope="col">Entrenador</th>
                                 <th scope="col">Pokemon</th>
-                                <th scope="col">Cantidad de Hijos/as</th>
+                                <th scope="col">Duelos ganados</th>
                                 <th scope="col">Batalla</th>
                             </tr>
                             </thead>
@@ -55,6 +55,22 @@
 
                             </tbody>
                         </table>
+                    </div>
+            
+                    <!-- Modal -->
+                    <div class="modal modal-xl fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title fs-5" id="exampleModalLabel"></h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="modalBody"></div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div class="marginSeccion" id="containerSearchCoachs">

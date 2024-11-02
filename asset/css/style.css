@@ -37,11 +37,16 @@ i {
     margin-right: 0.7rem;
 }
 
+.containerVs{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .imgVs {
-    width: 8rem;
+    width: 100%;
     border-radius: 10rem;
 }
-.imgSwal{
+.imgPokemonVs{
     width: 15rem;
 }
 
