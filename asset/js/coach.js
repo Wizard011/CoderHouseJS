@@ -85,89 +85,98 @@ document.getElementById('saveCoach').addEventListener('click', function() {
 viewFuntionCoach();
 
 // LISTAR ENTRENADORES
-function listCoachs() {
+async function listCoachs() {
     const tbody = document.getElementById('dataListCoachs');
     tbody.innerHTML = '';
     
     if (entrenadores) {
-        entrenadores.forEach(entrenador => {
+        for (const entrenador of entrenadores) {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <th scope="row">${entrenador.id}</th>
                 <td>${entrenador.entrenador}</td>
-                <td>${entrenador.pokemon}</th>
-                <td>${entrenador.hijos}</td>
+                <td>${entrenador.pokemon}</td>
+                <td>${entrenador.batallas}</td>
                 <td><button type="button" class="btn btn-success" id="entrenador${entrenador.id}" data-bs-toggle="modal" data-bs-target="#exampleModal">Generar Batalla</button></td>
             `;
             tbody.appendChild(row);
             
-            document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', () => {
+            document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', async () => {
+                const randomIndex = Math.floor(Math.random() * 151);
+                let lifePokemon = 500;
+                let lifeRival = 500;
 
-                selectOnePokemon(entrenador.pokemon).then(pokemonCoach => {
+                const pokemonCoach = await selectOnePokemon(entrenador.pokemon);
+                const pokemonRival = await selectOnePokemon(randomIndex);
 
-                    let attackRandom = Math.floor(Math.random() * pokemonCoach.moves.length); // NUMERO RANDOM DE ATAQUE SEGUN LARGO
-                    let attackUrlPokemon = pokemonCoach.moves[attackRandom].move.url; //URL PARA CONSULTAR PODER
-                    let attackNamePokemon = pokemonCoach.moves[attackRandom].move.name; //NOMBRE DEl ATAQUE
-                    
-                    selectOneMove(attackUrlPokemon).then(movePokemon => {
-                        
-                        let powerAttackPokemon = movePokemon.power;
-                    
-                        const randomIndex = Math.floor(Math.random() * 150) + 1;
-                        
-                        selectOnePokemon(randomIndex).then(pokemonRival => {
+                while (lifePokemon > 0 && lifeRival > 0) {
+                    const attackRandom = Math.floor(Math.random() * pokemonCoach.moves.length);
+                    const attackUrlPokemon = pokemonCoach.moves[attackRandom].move.url;
+                    const attackNamePokemon = pokemonCoach.moves[attackRandom].move.name;
 
-                            let attackRandomRival = Math.floor(Math.random() * pokemonRival.moves.length);
-                            let attackUrlRival = pokemonRival.moves[attackRandomRival].move.url;
-                            let attackNameRival = pokemonRival.moves[attackRandomRival].move.name;
+                    const movePokemon = await selectOneMove(attackUrlPokemon);
+                    const powerAttackPokemon = movePokemon.power || 0;
 
-                            selectOneMove(attackUrlRival).then(moveRival => {
+                    const attackRandomRival = Math.floor(Math.random() * pokemonRival.moves.length);
+                    const attackUrlRival = pokemonRival.moves[attackRandomRival].move.url;
+                    const attackNameRival = pokemonRival.moves[attackRandomRival].move.name;
 
-                                let powerAttackRival = moveRival.power;
-                                
-                                if (powerAttackPokemon > powerAttackRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador));
-                                
-                                document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
-                                document.getElementById('modalBody').innerHTML = `
-                                    <div class="row">
-                                        <div class="col-5 containerVs">
-                                            <img class="imgPokemonVs" src=${pokemonCoach.sprites.other["official-artwork"].front_default}>
-                                            <p>${pokemonCoach.name} usó <strong>${attackNamePokemon}</strong> con poder ${powerAttackPokemon == null ? 0 : powerAttackPokemon}</p>
-                                        </div>
-                                        <div class="col-2">
-                                            <img src="../img/vs.png" class="imgVs">
-                                        </div>
-                                        <div class="col-5 containerVs">
-                                            <img class="imgPokemonVs" src=${pokemonRival.sprites.other["official-artwork"].front_default}>
-                                            <p>${pokemonRival.name} usó <strong>${attackNameRival}</strong> con poder ${powerAttackRival == null ? 0 : powerAttackRival}</p>
-                                        </div>
-                                    </div>
-                                    `;
-                                setTimeout(() => {
-                                    Swal.fire({
-                                        title: `${powerAttackPokemon > powerAttackRival ? 'Sumaste 1 punto en este duelo' : 'Restaste 1 punto en este duelo'}`,
-                                        icon: `${powerAttackPokemon > powerAttackRival ?  'success' : 'error'}`,
-                                        confirmButtonText: `${powerAttackPokemon > powerAttackRival ? 'Ganaste' : 'Perdiste'}`
-                                    });
-                                }, 1500);
-                                listCoachs();
-                            });
-                        });
-                    });
+                    const moveRival = await selectOneMove(attackUrlRival);
+                    const powerAttackRival = moveRival.power || 0;
+
+                    // Aplica la lógica de batalla
+                    if (powerAttackPokemon >= powerAttackRival) {
+                        winBattle(entrenador.entrenador);
+                    } else {
+                        loseBattle(entrenador.entrenador);
+                    }
+
+                    lifePokemon -= powerAttackRival;
+                    lifeRival -= powerAttackPokemon;
+
+                    document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="row">
+                            <div class="col-5 containerVs">
+                                <img class="imgPokemonVs" src="${pokemonCoach.sprites.other["official-artwork"].front_default}">
+                                <h5>Energia: ${lifePokemon}</h5>
+                                <p>${pokemonCoach.name} usó <strong>${attackNamePokemon}</strong> con poder ${powerAttackPokemon}</p>
+                            </div>
+                            <div class="col-2">
+                                <img src="../img/vs.png" class="imgVs">
+                            </div>
+                            <div class="col-5 containerVs">
+                                <img class="imgPokemonVs" src="${pokemonRival.sprites.other["official-artwork"].front_default}">
+                                <h5>Energia: ${lifeRival}</h5>
+                                <p>${pokemonRival.name} usó <strong>${attackNameRival}</strong> con poder ${powerAttackRival}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // Simula un retraso en cada ronda de batalla
+                }
+
+                Swal.fire({
+                    title: `${lifePokemon > 0 ? 'Ganaste' : 'Perdiste'} esta batalla`,
+                    icon: `${lifePokemon > 0 ? 'success' : 'error'}`,
+                    confirmButtonText: 'Aceptar'
                 });
+                
+                listCoachs(); // Refresca el listado al finalizar la batalla
             });
-        });
+        }
     }
 }
 
+
 function winBattle(entrenadorName) {
     const entrenador = entrenadores.find(entrenador => entrenador.entrenador === entrenadorName);
-    entrenador.hijos++;
+    entrenador.batallas++;
     localStorage.setItem('entrenadores', JSON.stringify(entrenadores));
 }
 function loseBattle(entrenadorName) {
     const entrenador = entrenadores.find(entrenador => entrenador.entrenador === entrenadorName);
-    entrenador.hijos--;
+    entrenador.batallas--;
     localStorage.setItem('entrenadores', JSON.stringify(entrenadores));
 }
 
@@ -193,7 +202,7 @@ function SearchCoachs() {
                         <th scope="row">${searchCoach.id}</th>
                         <td>${searchCoach.entrenador}</td>
                         <td>${searchCoach.pokemon}</td>
-                        <td>${searchCoach.hijos}</td>
+                        <td>${searchCoach.batallas}</td>
                     </tr>
                 </tbody>
             </table>
@@ -246,7 +255,7 @@ function addCoachs() {
             id: id,
             entrenador: entrenador,
             pokemon: pokemon,
-            hijos: 0
+            batallas: 0
         };
     
         entrenadores.push(newCoach);
