@@ -103,66 +103,63 @@ async function listCoachs() {
             
             document.getElementById(`entrenador${entrenador.id}`).addEventListener('click', async () => {
                 const randomIndex = Math.floor(Math.random() * 151);
-                let lifePokemon = 500;
-                let lifeRival = 500;
+                let lifePokemon = 200;
+                let lifeRival = 200;
 
                 const pokemonCoach = await selectOnePokemon(entrenador.pokemon);
                 const pokemonRival = await selectOnePokemon(randomIndex);
 
-                while (lifePokemon > 0 && lifeRival > 0) {
-                    const attackRandom = Math.floor(Math.random() * pokemonCoach.moves.length);
-                    const attackUrlPokemon = pokemonCoach.moves[attackRandom].move.url;
-                    const attackNamePokemon = pokemonCoach.moves[attackRandom].move.name;
+                const advanceBattle = async () => {
+                    if (lifePokemon > 0 && lifeRival > 0) {
+                        const attackRandom = Math.floor(Math.random() * pokemonCoach.moves.length);
+                        const attackUrlPokemon = pokemonCoach.moves[attackRandom].move.url;
+                        const attackNamePokemon = pokemonCoach.moves[attackRandom].move.name;
 
-                    const movePokemon = await selectOneMove(attackUrlPokemon);
-                    const powerAttackPokemon = movePokemon.power || 0;
+                        const movePokemon = await selectOneMove(attackUrlPokemon);
+                        const powerAttackPokemon = movePokemon.power || 0;
 
-                    const attackRandomRival = Math.floor(Math.random() * pokemonRival.moves.length);
-                    const attackUrlRival = pokemonRival.moves[attackRandomRival].move.url;
-                    const attackNameRival = pokemonRival.moves[attackRandomRival].move.name;
+                        const attackRandomRival = Math.floor(Math.random() * pokemonRival.moves.length);
+                        const attackUrlRival = pokemonRival.moves[attackRandomRival].move.url;
+                        const attackNameRival = pokemonRival.moves[attackRandomRival].move.name;
 
-                    const moveRival = await selectOneMove(attackUrlRival);
-                    const powerAttackRival = moveRival.power || 0;
+                        const moveRival = await selectOneMove(attackUrlRival);
+                        const powerAttackRival = moveRival.power || 0;
 
-                    // Aplica la lógica de batalla
-                    if (powerAttackPokemon >= powerAttackRival) {
-                        winBattle(entrenador.entrenador);
+                        lifePokemon -= powerAttackRival;
+                        lifeRival -= powerAttackPokemon;
+
+                        document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
+                        document.getElementById('modalBody').innerHTML = `
+                            <div class="row">
+                                <div class="col-5 containerVs">
+                                    <img class="imgPokemonVs" src="${pokemonCoach.sprites.other["official-artwork"].front_default}">
+                                    <h5>Energia: ${lifePokemon}</h5>
+                                    <p>${pokemonCoach.name} usó <strong>${attackNamePokemon}</strong> con poder ${powerAttackPokemon}</p>
+                                </div>
+                                <div class="col-2">
+                                    <img src="../img/vs.png" class="imgVs">
+                                </div>
+                                <div class="col-5 containerVs">
+                                    <img class="imgPokemonVs" src="${pokemonRival.sprites.other["official-artwork"].front_default}">
+                                    <h5>Energia: ${lifeRival}</h5>
+                                    <p>${pokemonRival.name} usó <strong>${attackNameRival}</strong> con poder ${powerAttackRival}</p>
+                                </div>
+                            </div>
+                        `;
                     } else {
-                        loseBattle(entrenador.entrenador);
+                        Swal.fire({
+                            title: `${lifePokemon > 0 ? 'Ganaste esta batalla, sumaste 1 punto' : 'Perdiste esta batalla, restaste 1 punto'}`,
+                            icon: `${lifePokemon > 0 ? 'success' : 'error'}`,
+                            confirmButtonText: 'Aceptar'
+                        });
+                        
+                        listCoachs(); // Refresca el listado al finalizar la batalla
+                        document.getElementById('btnBatalla').removeEventListener('click', advanceBattle);
                     }
+                };
 
-                    lifePokemon -= powerAttackRival;
-                    lifeRival -= powerAttackPokemon;
-
-                    document.getElementById('exampleModalLabel').innerHTML = `Batalla generada contra ${pokemonRival.name}`;
-                    document.getElementById('modalBody').innerHTML = `
-                        <div class="row">
-                            <div class="col-5 containerVs">
-                                <img class="imgPokemonVs" src="${pokemonCoach.sprites.other["official-artwork"].front_default}">
-                                <h5>Energia: ${lifePokemon}</h5>
-                                <p>${pokemonCoach.name} usó <strong>${attackNamePokemon}</strong> con poder ${powerAttackPokemon}</p>
-                            </div>
-                            <div class="col-2">
-                                <img src="../img/vs.png" class="imgVs">
-                            </div>
-                            <div class="col-5 containerVs">
-                                <img class="imgPokemonVs" src="${pokemonRival.sprites.other["official-artwork"].front_default}">
-                                <h5>Energia: ${lifeRival}</h5>
-                                <p>${pokemonRival.name} usó <strong>${attackNameRival}</strong> con poder ${powerAttackRival}</p>
-                            </div>
-                        </div>
-                    `;
-
-                    await new Promise(resolve => setTimeout(resolve, 1500)); // Simula un retraso en cada ronda de batalla
-                }
-
-                Swal.fire({
-                    title: `${lifePokemon > 0 ? 'Ganaste' : 'Perdiste'} esta batalla`,
-                    icon: `${lifePokemon > 0 ? 'success' : 'error'}`,
-                    confirmButtonText: 'Aceptar'
-                });
-                
-                listCoachs(); // Refresca el listado al finalizar la batalla
+                // Agrega el listener para avanzar en cada ronda al hacer clic
+                document.getElementById('btnBatalla').addEventListener('click', advanceBattle);
             });
         }
     }
