@@ -153,11 +153,12 @@ async function listCoachs() {
                             confirmButtonText: 'Aceptar'
                         });
                         
-                        listCoachs(); // Refresca el listado al finalizar la batalla
+                        if (lifePokemon > lifeRival ? winBattle(entrenador.entrenador) : loseBattle(entrenador.entrenador))
+
                         document.getElementById('btnBatalla').removeEventListener('click', advanceBattle);
+                        listCoachs();
                     }
                 };
-
                 // Agrega el listener para avanzar en cada ronda al hacer clic
                 document.getElementById('btnBatalla').addEventListener('click', advanceBattle);
             });
